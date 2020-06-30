@@ -1,0 +1,36 @@
+version: '3'
+services:
+  tweet_collector:
+    build: tweet_collector/
+    volumes:
+      - ./tweet_collector/:/code
+    links:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+    - 27027:27017
+
+  sentiment_analysis:
+    build: sentiment_analysis/
+    volumes:
+      - ./sentiment_analysis/:/code
+    links:
+      - mongodb
+      - postgresdb
+
+  postgresdb:
+    image: postgres
+    environment:
+      - POSTGRES_USER=denniss
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5555:5432
+
+  meta:
+    image: metabase/metabase
+    ports:
+      - 3000:3000
+    links:
+      - postgresdb
