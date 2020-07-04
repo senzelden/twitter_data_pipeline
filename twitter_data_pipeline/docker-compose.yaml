@@ -3,8 +3,8 @@ services:
   tweet_collector:
     build: tweet_collector/
     volumes:
-      - ./tweet_collector/:/code
-    links:
+      - ./tweet_collector/:/tweet_collector
+    depends_on:
       - mongodb
 
   mongodb:
@@ -12,18 +12,10 @@ services:
     ports:
     - 27027:27017
 
-  sentiment_analysis:
-    build: sentiment_analysis/
-    volumes:
-      - ./sentiment_analysis/:/code
-    links:
-      - mongodb
-      - postgresdb
-
   postgresdb:
     image: postgres
     environment:
-      - POSTGRES_USER=denniss
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - 5555:5432
@@ -31,6 +23,18 @@ services:
   meta:
     image: metabase/metabase
     ports:
-      - 3000:3000
-    links:
+      - 12345:3000
+    depends_on:
+      - postgresdb
+
+  airflow:
+    build: airflow/
+    volumes:
+      - ./airflow/dags/:/usr/local/airflow/dags/
+      - ./airflow/requirements.txt:/usr/local/airflow/requirements.txt
+    ports:
+      - "8081:8080"
+    command: ["webserver", "scheduler"]
+    depends_on:
+      - mongodb
       - postgresdb
