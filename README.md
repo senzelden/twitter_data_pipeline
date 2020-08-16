@@ -1,4 +1,5 @@
 # Project: Twitter Metabase Data Pipeline
+![data_flow_diagram](data_flow_diagram.jpeg)
 ![twitter_data pipeline](twitter_data_pipeline.gif)
 ### Background
 
